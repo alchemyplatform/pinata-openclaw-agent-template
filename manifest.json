@@ -7,7 +7,7 @@
     "emoji": "⚗️"
   },
   "template": {
-    "slug": "alchemy-agent",
+    "slug": "alchemy-pinata-agent",
     "category": "blockchain",
     "partnerName": "Alchemy",
     "tags": ["blockchain", "alchemy", "wallet", "whale-tracking", "price-monitoring", "defi", "nft"]
