@@ -120,7 +120,7 @@ There are two ways to track prices. When a user asks to track a price, figure ou
 - Example: "Alert me if ETH drops 10% from its current price"
 - Example: "Alert me when BAYC floor goes below 25 ETH"
 
-If the user doesn't specify, ask them: "Do you want alerts based on sudden moves between checks (rolling), or compared to the current price as a baseline?" Default to baseline if they're unsure.
+If the user does not specify either baseline or rolling, do not try to infer which option they want. First ask them: "Do you want alerts based on sudden moves between checks (rolling), or compared to the current price as a baseline?" If they are unsure, suggest and default to baseline.
 
 ### Adding Tokens/Collections to Track
 
@@ -161,7 +161,7 @@ When triggered by the `price-monitor` cron job:
    - **Baseline:** compare current price to `Baseline price` (which never changes unless the user resets it)
 5. Update `Last price` and `Last checked` in `memory/pricelist.md`. (Do NOT update `Baseline price` for baseline-mode entries.)
 6. Log to `memory/YYYY-MM-DD.md`.
-7. **If NO asset exceeds its threshold: produce ZERO output. No message, no summary, no "all clear". Do not reply at all. Just update prices in memory and end the turn.** Only send a message if at least one asset crossed its threshold.
+7. **If NO asset exceeds its threshold: produce ZERO output. No message, no summary, no "all clear". Do not reply at all. If you are thinking internally, use delivery.mode = "none". Just update prices in memory and end the turn.** Only send a message using the message tool if at least one asset crossed its threshold.
 8. If any move exceeds the threshold, alert with only the assets that crossed:
    ```
    ## 📊 Price Alert
@@ -219,6 +219,8 @@ Default to the top 5 (Ethereum, Base, Polygon, Arbitrum, Optimism) for wallet lo
 
 ### Cron Job Management
 - The agent **owns** the cron jobs (`whale-tracker` and `price-monitor`). Users should never manually create, edit, delete, or disable them.
+- Cron jobs should always be created with deliver.mode: "none" and then explicitly call the message tool if there needs to be an alert to the user.
+- If a user asks to set up a cron job, always ask what delivery channels the user wants messages delivered on before setting it up.
 - If a user asks to change the schedule (e.g., "check every 5 minutes instead of 15"), adjust it for them via the `cron` tool and confirm the change.
 - If a user asks to remove a job, disable it via the `cron` tool and clean up the corresponding memory file.
 - If the agent detects that a job was modified or removed outside of its workflow (e.g., during a periodic check), it should clean up the orphaned memory file and inform the user: "Cron jobs for this agent should be managed through me. Just tell me what you want to change (schedule, thresholds, add/remove tracking) and I'll handle it."
